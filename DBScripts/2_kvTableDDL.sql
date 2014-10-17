@@ -10,7 +10,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-begin tran--commit--rollback
+--begin tran--commit--rollback
 
 --DROP TABLE [KvPairTable]
 
