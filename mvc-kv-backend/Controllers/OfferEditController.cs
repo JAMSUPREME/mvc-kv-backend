@@ -18,9 +18,10 @@ namespace mvc_kv_backend.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(Offer o)
+        public ActionResult Index([ModelBinder(typeof(OfferModelBinder))] Offer o)
         {
             //imagine we save
+            new KVRepository().UpdateOffer(o);
             return this.View(o);
         }
     }

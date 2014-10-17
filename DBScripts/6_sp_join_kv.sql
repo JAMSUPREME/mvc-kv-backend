@@ -41,8 +41,9 @@ BEGIN
 	FROM (
 		SELECT DISTINCT PIVOT_CODE, [Key]
 		FROM (
-    		SELECT [Key], [Value], ROW_NUMBER() OVER (PARTITION BY [Schema] ORDER BY [Key]) AS PIVOT_CODE
+    		SELECT [Key], ROW_NUMBER() OVER (PARTITION BY [Schema] ORDER BY [Key]) AS PIVOT_CODE
 			FROM KvPairTable
+			GROUP BY [Key],[Schema]
 			--optional where clause to restrict expected pivot fields
 		) AS rows
 	) AS PIVOT_CODES

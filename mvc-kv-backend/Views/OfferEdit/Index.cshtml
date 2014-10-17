@@ -21,6 +21,7 @@
             <div>
                 <h3>Common Info</h3>
                 <div>
+                    @Html.HiddenFor(o => o.Id)
                     @Html.TextBoxFor(o => o.ActiveFlag)
                     @Html.Telerik().DatePickerFor(o => o.OfferStartDate)
                     @Html.Telerik().DatePickerFor(o => o.OfferEndDate)
@@ -38,8 +39,8 @@
                     }
                 </div>
             </div>
-            
-            <br/>
+
+            <br />
             <input type="submit" value="Submit stuff" />
         }
     </div>

@@ -505,6 +505,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\OfferEditController.cs" />
     <Compile Include="Controllers\OfferGridController.cs" />
+    <Compile Include="Controllers\OfferModelBinder.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
