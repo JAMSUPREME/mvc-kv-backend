@@ -1,48 +1,39 @@
 ﻿@{
-    Layout = null;
+    Layout = "../_Layout.cshtml";
+    ViewBag.Title = "Edit Offer";
 }
 @using System.Linq
 @using Telerik.Web.Mvc.UI
 @model KvBackend.Offer
 
-<!DOCTYPE html>
+<div>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Edit Offer</title>
-</head>
-<body>
-    <div>
-
-        @using (@Html.BeginForm())
-        {
-            <h2>Offer Info:</h2>
+    @using (@Html.BeginForm())
+    {
+        <h2>Offer Info:</h2>
+        <div>
+            <h3>Common Info</h3>
             <div>
-                <h3>Common Info</h3>
-                <div>
-                    @Html.HiddenFor(o => o.Id)
-                    @Html.TextBoxFor(o => o.ActiveFlag)
-                    @Html.Telerik().DatePickerFor(o => o.OfferStartDate)
-                    @Html.Telerik().DatePickerFor(o => o.OfferEndDate)
-                </div>
+                @Html.HiddenFor(o => o.Id)
+                @Html.TextBoxFor(o => o.ActiveFlag)
+                @Html.Telerik().DatePickerFor(o => o.OfferStartDate)
+                @Html.Telerik().DatePickerFor(o => o.OfferEndDate)
             </div>
+        </div>
+        <div>
+            <h3>Cat names</h3>
             <div>
-                <h3>Cat names</h3>
-                <div>
-                    @foreach (var catNum in Model.ExtendedFields.Where(ef => ef.Key.StartsWith("Cat")).GroupBy(kv => kv.Key.Substring(4, 1)))
-                    {
-                        var localCatNum = catNum.Key;
-                        @("Cat name: ")
-                        @Html.TextBoxFor(o => o.ExtendedFields["Cat[" + localCatNum + "].Name"])
-                        <br />
-                    }
-                </div>
+                @foreach (var catNum in Model.ExtendedFields.Where(ef => ef.Key.StartsWith("Cat")).GroupBy(kv => kv.Key.Substring(4, 1)))
+                {
+                    var localCatNum = catNum.Key;
+                    @("Cat name: ")
+                    @Html.TextBoxFor(o => o.ExtendedFields["Cat[" + localCatNum + "].Name"])
+                    <br />
+                }
             </div>
+        </div>
 
-            <br />
-            <input type="submit" value="Submit stuff" />
-        }
-    </div>
-</body>
-</html>
+        <br />
+        <input type="submit" value="Submit stuff" />
+    }
+</div>

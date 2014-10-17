@@ -20,8 +20,11 @@ GO
 -- =============================================
 CREATE PROCEDURE dbo.sp_getKVPairs
 	-- Add the parameters for the stored procedure here
-	@whereClause varchar(max) = '',
-	@selectClause varchar(max) = ''
+	@whereClause nvarchar(max) = '',
+	@selectClause nvarchar(max) = 'OfferStartDate,OfferEndDate,ActiveFlag,IsActive',
+	@pageStart int = 1,
+	@pageEnd int = 99999,
+	@customSort nvarchar(max) = 'Id'
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -56,19 +59,23 @@ BEGIN
 		FROM KvPairTable
 		--optional where clause can be introduced here, dynamically or otherwise
 	)
-	SELECT r.Id' + @selectClause + ',' + @select_list + '
-	FROM p
-	PIVOT (
-		MIN(Value)
-		FOR PIVOT_CODE IN (
-			' + @pivot_list + '
-		)
-	) AS pvt
-	RIGHT OUTER JOIN RootObject r ON r.Id = pvt.RootObjectId
-	'
+	SELECT * FROM(
+	SELECT r.Id, ROW_NUMBER() OVER (ORDER BY ' + @customSort + ') as RowNum' 
+		+ @selectClause + ',' + @select_list + '
+		FROM p
+		PIVOT (
+			MIN(Value)
+			FOR PIVOT_CODE IN (
+				' + @pivot_list + '
+			)
+		) AS pvt
+		RIGHT OUTER JOIN RootObject r ON r.Id = pvt.RootObjectId
+	) wrapt
+	WHERE wrapt.RowNum BETWEEN ' + CAST(@pageStart as nvarchar(50)) + ' AND ' + CAST(@pageEnd as nvarchar(50))
 	+ @whereClause
 
 	
+	--SELECT @sql
 	EXEC sp_executesql @sql
 END
 GO

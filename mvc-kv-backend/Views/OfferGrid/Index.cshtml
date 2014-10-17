@@ -1,20 +1,14 @@
 ﻿@using Telerik.Web.Mvc.UI
 
 @{
-    Layout = null;
+    Layout = "../_Layout.cshtml";
+    ViewBag.Title = "Offer Grid";
 }
 @model System.Collections.Generic.IEnumerable<KvBackend.Offer>
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Offer grid</title>
-</head>
 <body>
     <div>
-       @Html.Telerik().Grid(Model).Name("offerGrid").Columns((gcf) =>
+        @Html.Telerik().Grid(Model).Name("offerGrid").Columns((gcf) =>
        {
            //gcf.Bound(o => o.ExtendedFields["Name"]);//our view is aware of the field (otherwise empty data sets will cause UI issues)
            //gcf.Bound(o => o.ExtendedFields["Hobby.Category.Name"]);
@@ -22,8 +16,7 @@
            gcf.Bound(o => o.IsActive);
            gcf.Template(o => o.ExtendedFields["Name"]).Title("Name");
            gcf.Template(o => o.ExtendedFields["Hobby.Category.Name"]).Title("Hobby Category");
-       })
-         
+       }).Pageable().Sortable()
+
     </div>
 </body>
-</html>

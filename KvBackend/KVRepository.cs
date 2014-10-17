@@ -37,22 +37,23 @@ namespace KvBackend
         {
             throw new NotImplementedException();
         }
-
-        public IEnumerable<Offer> GetOffers(string whereClause = "", string selectClause = "OfferStartDate,OfferEndDate,ActiveFlag,IsActive")
+        /// <summary>
+        /// Prototype of getting offers with all their extended fields.
+        /// Have NOT yet evaluated getting data across schemas or dealing with complex filtering or paging.
+        /// </summary>
+        /// <param name="whereClause">FYI: This is currently very brittle!!!</param>
+        /// <param name="selectClause">FYI: This probably isn't necessary - might remove?</param>
+        /// <param name="pageStart"></param>
+        /// <param name="pageEnd"></param>
+        /// <returns></returns>
+        public IEnumerable<Offer> GetOffers(string whereClause = null, string selectClause = null, int pageStart = 1, int pageEnd = 99999)
         {
             List<Offer> offers = new List<Offer>();
-            //ConfigurationManager.AppSettings
             using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
 
-                var cm = conn.CreateCommand();
-                SqlParameter pWhere = new SqlParameter("@where", SqlDbType.NVarChar, -1) { Value = whereClause };//WHERE Id = ''' + '86C3B9D1-5269-4D8B-BA99-4F7B3CEB371D' + '''
-                SqlParameter pSelect = new SqlParameter("@select", SqlDbType.NVarChar, -1) { Value = selectClause };
-                cm.CommandText = "exec sp_getKVPairs @where, @select";
-                cm.Parameters.Add(pWhere);
-                cm.Parameters.Add(pSelect);
-                cm.Prepare();
+                var cm = this.BuildCommand(conn, whereClause, selectClause);
 
                 using (IDataReader reader = cm.ExecuteReader())
                 {
@@ -80,6 +81,45 @@ namespace KvBackend
             }
 
             return offers;
+        }
+
+        private SqlCommand BuildCommand(SqlConnection conn, string whereClause, string selectClause, int pageStart = -1, int pageEnd = -1)
+        {
+            StringBuilder sbCMD = new StringBuilder("exec sp_getKVPairs");
+            var cm = conn.CreateCommand();
+            if (whereClause != null)
+            {
+                SqlParameter pWhere = new SqlParameter("@where", SqlDbType.NVarChar, -1) { Value = whereClause };//WHERE Id = ''' + '86C3B9D1-5269-4D8B-BA99-4F7B3CEB371D' + '''
+                sbCMD.Append(" @where=@where");
+                cm.Parameters.Add(pWhere);
+            }
+            if (selectClause != null)
+            {
+                SqlParameter pSelect = new SqlParameter("@select", SqlDbType.NVarChar, -1) { Value = selectClause };
+                if (cm.Parameters.Count > 0)
+                    sbCMD.Append(",");
+                sbCMD.Append(" @select=@select");
+                cm.Parameters.Add(pSelect);
+            }
+            if (pageStart != -1)
+            {
+                SqlParameter pPageStart = new SqlParameter("@pageStart", SqlDbType.Int) { Value = pageStart };
+                if (cm.Parameters.Count > 0)
+                    sbCMD.Append(",");
+                sbCMD.Append(" @pageStart=@pageStart");
+                cm.Parameters.Add(pPageStart);
+            }
+            if (pageEnd != -1)
+            {
+                SqlParameter pPageEnd = new SqlParameter("@pageEnd", SqlDbType.Int) { Value = pageEnd };
+                if (cm.Parameters.Count > 0)
+                    sbCMD.Append(",");
+                sbCMD.Append(" @pageEnd=@pageEnd");
+                cm.Parameters.Add(pPageEnd);
+            }
+            cm.CommandText = sbCMD.ToString();
+            cm.Prepare();
+            return cm;
         }
 
         public void UpdateOffer(Offer o)

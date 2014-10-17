@@ -26,11 +26,23 @@ namespace KvBackend.Tests
         [Test]
         public void GetOffers_EnsureFill()
         {
-            //todo
-            KVRepository repo = new KVRepository(ConfigurationManager.ConnectionStrings["StuffDb"].ConnectionString);
+            KVRepository repo = new KVRepository();
 
             var offers = repo.GetOffers();
 
+            foreach (Offer offer in offers)
+            {
+                PrintOffer(offer);
+            }
+        }
+        [Test]
+        public void GetOffers_EnsureFill_WithPaging()
+        {
+            KVRepository repo = new KVRepository();
+
+            var offers = repo.GetOffers(pageStart: 1, pageEnd: 1).ToList();
+
+            Assert.That(offers.Count() == 1);
             foreach (Offer offer in offers)
             {
                 PrintOffer(offer);
