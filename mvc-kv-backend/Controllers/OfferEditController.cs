@@ -12,7 +12,8 @@ namespace mvc_kv_backend.Controllers
         // GET: OfferEdit
         public ActionResult Index()
         {
-            return View(new KVRepository().GetOffers().First(o => o.Id.Equals(new Guid("DE3AA882-CC88-456A-A2CB-155D477D00A2"))));
+            var offer = new KVRepository().GetOffers().First(o => o.Id.Equals(new Guid("DE3AA882-CC88-456A-A2CB-155D477D00A2")));
+            return View(offer);
         }
     }
 }
