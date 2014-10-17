@@ -8,13 +8,15 @@ DECLARE @pageStart int
 DECLARE @pageEnd int
 DECLARE @customSort nvarchar(max) 
 
---SET @where = 'WHERE Id = ''' + '86C3B9D1-5269-4D8B-BA99-4F7B3CEB371D' + ''''
-SET @select = 'OfferStartDate as OfferStartDate,OfferEndDate as OfferEndDate,ActiveFlag as ActiveFlag,IsActive as IsActive'
+SET @where = 'AND [OfferStartDate] LIKE ''%ou%'''
+SET @select = 'OfferStartDate,OfferEndDate,ActiveFlag,IsActive,[Description]'
 
-SET @pageStart = 1
-SET @pageEnd = 1
+--SET @pageStart = 1
+--SET @pageEnd = 1
 
 --SET @customSort = 'Id'
 
 --important that params are named if not passing all
-EXEC sp_getKVPairs @pageStart=@pageStart,@pageEnd = @pageEnd,@customSort=@customSort
+EXEC sp_getKVPairs @whereClause=@where,@selectClause=@select
+
+--SELECT * FROM KvPairTable

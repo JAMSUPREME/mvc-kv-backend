@@ -7,16 +7,18 @@
 @model System.Collections.Generic.IEnumerable<KvBackend.Offer>
 
 <body>
+    
+    <h2>Note: This version of telerik MVC extensions is deprecated, and we'll use the new Kendo() version during impl. (I think...)</h2>
     <div>
         @Html.Telerik().Grid(Model).Name("offerGrid").Columns((gcf) =>
-       {
-           //gcf.Bound(o => o.ExtendedFields["Name"]);//our view is aware of the field (otherwise empty data sets will cause UI issues)
-           //gcf.Bound(o => o.ExtendedFields["Hobby.Category.Name"]);
+            {
+                //gcf.Bound(o => o.ExtendedFields["Name"]);//our view is aware of the field (otherwise empty data sets will cause UI issues)
+                //gcf.Bound(o => o.ExtendedFields["Hobby.Category.Name"]);
 
-           gcf.Bound(o => o.IsActive);
-           gcf.Template(o => o.ExtendedFields["Name"]).Title("Name");
-           gcf.Template(o => o.ExtendedFields["Hobby.Category.Name"]).Title("Hobby Category");
-       }).Pageable().Sortable()
+                gcf.Bound(o => o.IsActive);
+                gcf.Template(o => o.ExtendedFields["Name"]).Title("Name");
+                gcf.Template(o => o.ExtendedFields["Hobby.Category.Name"]).Title("Hobby Category");
+            }).Pageable().Sortable()
 
     </div>
 </body>

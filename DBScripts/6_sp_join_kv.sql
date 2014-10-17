@@ -21,7 +21,7 @@ GO
 CREATE PROCEDURE dbo.sp_getKVPairs
 	-- Add the parameters for the stored procedure here
 	@whereClause nvarchar(max) = '',
-	@selectClause nvarchar(max) = 'OfferStartDate,OfferEndDate,ActiveFlag,IsActive',
+	@selectClause nvarchar(max) = 'OfferStartDate,OfferEndDate,ActiveFlag,IsActive,[Description]',
 	@pageStart int = 1,
 	@pageEnd int = 99999,
 	@customSort nvarchar(max) = 'Id'

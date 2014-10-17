@@ -9,6 +9,16 @@ using System.Threading.Tasks;
 
 namespace KvBackend
 {
+    public enum ExtendedFieldEquality
+    {
+        Equals = 1,
+        NotEquals,
+        Like,
+        LessThan,
+        GreaterThan,
+        LessThanOrEqualTo,
+        GreaterThanOrEqualTo
+    }
     public class KVRepository
     {
         private readonly string connectionString;
@@ -37,22 +47,30 @@ namespace KvBackend
         {
             throw new NotImplementedException();
         }
+
         /// <summary>
         /// Prototype of getting offers with all their extended fields.
         /// Have NOT yet evaluated getting data across schemas or dealing with complex filtering or paging.
         /// </summary>
-        /// <param name="whereClause">FYI: This is currently very brittle!!!</param>
+        /// <param name="whereClause">FYI: This is currently very brittle!!! (probly replaced by wildcardEquality)</param>
         /// <param name="selectClause">FYI: This probably isn't necessary - might remove?</param>
         /// <param name="pageStart"></param>
         /// <param name="pageEnd"></param>
+        /// <param name="wildCardEquality">Probably become a replacement for the where clause bit. String is wildcard, object arr is extended fields key collection</param>
         /// <returns></returns>
-        public IEnumerable<Offer> GetOffers(string whereClause = null, string selectClause = null, int pageStart = 1, int pageEnd = 99999)
+        public IEnumerable<Offer> GetOffers(string whereClause = null, string selectClause = null, int pageStart = 1, int pageEnd = 99999,
+            Tuple<string, string[]> wildCardEquality = null)
         {
             List<Offer> offers = new List<Offer>();
             using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
 
+                //for now so that where clause doesn't conflict
+                if (whereClause == null && wildCardEquality != null)
+                {
+                    whereClause = this.BuildWildcard(wildCardEquality.Item1, wildCardEquality.Item2.Concat(KnownFields).ToArray());
+                }
                 var cm = this.BuildCommand(conn, whereClause, selectClause);
 
                 using (IDataReader reader = cm.ExecuteReader())
@@ -83,6 +101,27 @@ namespace KvBackend
             return offers;
         }
 
+        private string BuildWildcard(string wildcard, string[] potentialFields)
+        {
+            StringBuilder sb = new StringBuilder(" AND (");
+
+            foreach (string potentialField in potentialFields)
+            {
+                if (sb.Length != 6)
+                    sb.Append(" OR ");
+                sb.Append("[" + EscapeBrackets(potentialField) + "]" + " LIKE " + "'%" + wildcard + "%'");
+            }
+            sb.Append(")");
+
+            return sb.ToString();
+        }
+
+        private string EscapeBrackets(string strWithBracket)
+        {
+            if (strWithBracket.Contains('['))
+                return strWithBracket.Replace("]", "]]");
+            return strWithBracket;
+        }
         private SqlCommand BuildCommand(SqlConnection conn, string whereClause, string selectClause, int pageStart = -1, int pageEnd = -1)
         {
             StringBuilder sbCMD = new StringBuilder("exec sp_getKVPairs");
@@ -90,7 +129,7 @@ namespace KvBackend
             if (whereClause != null)
             {
                 SqlParameter pWhere = new SqlParameter("@where", SqlDbType.NVarChar, -1) { Value = whereClause };//WHERE Id = ''' + '86C3B9D1-5269-4D8B-BA99-4F7B3CEB371D' + '''
-                sbCMD.Append(" @where=@where");
+                sbCMD.Append(" @whereClause=@where");
                 cm.Parameters.Add(pWhere);
             }
             if (selectClause != null)
@@ -98,7 +137,7 @@ namespace KvBackend
                 SqlParameter pSelect = new SqlParameter("@select", SqlDbType.NVarChar, -1) { Value = selectClause };
                 if (cm.Parameters.Count > 0)
                     sbCMD.Append(",");
-                sbCMD.Append(" @select=@select");
+                sbCMD.Append(" @selectClause=@select");
                 cm.Parameters.Add(pSelect);
             }
             if (pageStart != -1)

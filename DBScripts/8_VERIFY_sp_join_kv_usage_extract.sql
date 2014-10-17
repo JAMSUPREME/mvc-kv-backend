@@ -14,7 +14,7 @@ SET @pageEnd = 99999
 --
 --sproc logic
 --
-SET @whereClause = ''
+SET @whereClause = 'AND [Cat[0]].Name] LIKE ''%whi%''' --important, brackets must be escape
 SET @selectClause = 'OfferStartDate as OfferStartDate,OfferEndDate as OfferEndDate,ActiveFlag as ActiveFlag,IsActive as IsActive'
 
 SET @selectClause = CASE WHEN @selectClause = '' THEN '' ELSE ',' + @selectClause END
