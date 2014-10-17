@@ -15,28 +15,33 @@
 <body>
     <div>
 
-        <h2>Offer Info:</h2>
-        <div>
-            <h3>Common Info</h3>
+        @using (@Html.BeginForm())
+        {
+            <h2>Offer Info:</h2>
             <div>
-                @Html.TextBoxFor(o => o.ActiveFlag)
-                @Html.Telerik().DatePickerFor(o => o.OfferStartDate)
-                @Html.Telerik().DatePickerFor(o => o.OfferEndDate)
+                <h3>Common Info</h3>
+                <div>
+                    @Html.TextBoxFor(o => o.ActiveFlag)
+                    @Html.Telerik().DatePickerFor(o => o.OfferStartDate)
+                    @Html.Telerik().DatePickerFor(o => o.OfferEndDate)
+                </div>
             </div>
-        </div>
-        <div>
-            <h3>Cat names</h3>
             <div>
-                @foreach (var catNum in Model.ExtendedFields.Where(ef => ef.Key.StartsWith("Cat")).GroupBy(kv => kv.Key.Substring(4, 1)))
-                {
-                    var localCatNum = catNum.Key;
-                    @("Cat name: ")
-                    @Html.TextBoxFor(o => o.ExtendedFields["Cat[" + localCatNum + "].Name"])
-                    <br/>
-                }
+                <h3>Cat names</h3>
+                <div>
+                    @foreach (var catNum in Model.ExtendedFields.Where(ef => ef.Key.StartsWith("Cat")).GroupBy(kv => kv.Key.Substring(4, 1)))
+                    {
+                        var localCatNum = catNum.Key;
+                        @("Cat name: ")
+                        @Html.TextBoxFor(o => o.ExtendedFields["Cat[" + localCatNum + "].Name"])
+                        <br />
+                    }
+                </div>
             </div>
-        </div>
-
+            
+            <br/>
+            <input type="submit" value="Submit stuff" />
+        }
     </div>
 </body>
 </html>

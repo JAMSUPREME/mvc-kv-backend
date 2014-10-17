@@ -31,7 +31,7 @@ namespace KvBackend
         /// <summary>
         /// One manner of statically avoiding filling ExtendedFields with known fields
         /// </summary>
-        private static string[] KnownFields = new[] { "Description", "OfferStartDate", "OfferEndDate", "ActiveFlag", "IsActive" };
+        private static readonly string[] KnownFields = { "Id", "Description", "OfferStartDate", "OfferEndDate", "ActiveFlag", "IsActive" };
 
         public Offer GetOffer(Guid id)
         {
@@ -80,6 +80,37 @@ namespace KvBackend
             }
 
             return offers;
+        }
+
+        public void UpdateOffer(Offer o)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                var cm = conn.CreateCommand();
+
+                StringBuilder sb = new StringBuilder();
+                //imagine I use parameters here, but for now it's too much work =S
+                foreach (var extField in o.ExtendedFields)
+                {
+                    sb.AppendLine(" IF NOT EXISTS(SELECT * FROM KvPairTable WHERE [Key] = '" + extField.Key + "' AND RootObjectId = '" + o.Id + "') BEGIN "
+                    + " INSERT INTO KvPairTable(RootObjectId,[Key],Value,[Schema]) "
+                    + " VALUES ('" + o.Id + "'"
+                        + ",'" + extField.Key + "'"
+                        + ",'" + extField.Value + "'"
+                        + ",'" + "Schem1" + "'"
+                        + ")"
+                    + " END "
+                    + " ELSE BEGIN "
+                    + " UPDATE KvPairTable SET Value = '" + extField.Value + "' WHERE [Key] = '" + extField.Key + "' AND RootObjectId = '" + o.Id + "'"
+                    + " END");
+                }
+
+                cm.CommandText = sb.ToString();
+
+                cm.ExecuteNonQuery();
+            }
         }
     }
 }

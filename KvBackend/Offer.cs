@@ -12,8 +12,13 @@ namespace KvBackend
     public class Offer
     {
         public Offer(bool isActive)
+            :this()
         {
             this.IsActive = isActive;
+        }
+
+        public Offer()
+        {
             ExtendedFields = new Dictionary<string, object>();
         }
 
