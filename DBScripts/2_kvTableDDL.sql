@@ -29,3 +29,7 @@ CREATE TABLE [dbo].[KvPairTable](
 CREATE CLUSTERED INDEX IDX_KvPairTable ON [dbo].[KvPairTable] (RootObjectId)
 
 
+ALTER TABLE KvPairTable
+ADD CONSTRAINT FK_KvPair_RootObj
+	FOREIGN KEY (RootObjectId) 
+    REFERENCES RootObject (Id) 

@@ -23,6 +23,10 @@ namespace KvBackend.Tests
                 conn.Open();
             }
         }
+        /// <summary>
+        /// note: It is likely that joining the KV and then flattening it manually is a lot faster than pivoting, since the pivot requires 
+        /// determining the specific fields that will be pulled out into columns
+        /// </summary>
         [Test]
         public void GetOffers_EnsureFill()
         {
