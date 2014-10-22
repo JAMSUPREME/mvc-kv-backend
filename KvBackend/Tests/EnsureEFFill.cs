@@ -35,9 +35,9 @@ namespace KvBackend.Tests
                             select r).First();
 
                 first.FillExtendedFields(ExtendedFieldRetrieval.Flat);
-                var weirdPropName = ((IDictionary<string, object>)first.ExtendedFields)["Cat[0].Name"];
-                var normalPropName = first.ExtendedFields.Name;
-                var deepPropName = ((IDictionary<string, object>)first.ExtendedFields)["Hobby.Category.Name"];//first.ExtendedFields.Hobby.Category.Name;
+                var weirdPropName = ((IDictionary<string, object>)first.ExtendedFieldsDynamic)["Cat[0].Name"];
+                var normalPropName = first.ExtendedFieldsDynamic.Name;
+                var deepPropName = ((IDictionary<string, object>)first.ExtendedFieldsDynamic)["Hobby.Category.Name"];//first.ExtendedFields.Hobby.Category.Name;
 
                 Console.WriteLine("---Flat---");
 
@@ -46,9 +46,9 @@ namespace KvBackend.Tests
                 Console.WriteLine(deepPropName);
 
                 first.FillExtendedFields(ExtendedFieldRetrieval.Unflat);
-                weirdPropName = first.ExtendedFields.Cat[0].Name;
-                normalPropName = first.ExtendedFields.Name;
-                deepPropName = first.ExtendedFields.Hobby.Category.Name;
+                weirdPropName = first.ExtendedFieldsDynamic.Cat[0].Name;
+                normalPropName = first.ExtendedFieldsDynamic.Name;
+                deepPropName = first.ExtendedFieldsDynamic.Hobby.Category.Name;
 
                 Console.WriteLine();
                 Console.WriteLine("---Unflat---");
@@ -56,6 +56,26 @@ namespace KvBackend.Tests
                 Console.WriteLine(normalPropName);
                 Console.WriteLine(deepPropName);
 
+            }
+        }
+        [Test]
+        public void GetSingleOffer_EnsureExtendedFields_Normalize()
+        {
+            using (var db = new StuffEntities())
+            {
+                var first = (from r in db.RootObjects
+                             select r).First();
+
+                first.FillExtendedFields(ExtendedFieldRetrieval.FlatWithKeyNormalization);
+                var weirdPropName = ((IDictionary<string, object>)first.ExtendedFieldsDynamic)["Cat(0)-Name"];
+                var normalPropName = first.ExtendedFieldsDynamic["Name"];
+                var deepPropName = ((IDictionary<string, object>)first.ExtendedFieldsDynamic)["Hobby-Category-Name"];//first.ExtendedFields.Hobby.Category.Name;
+
+                Console.WriteLine("---Flat w/ Normalization---");
+
+                Console.WriteLine(weirdPropName);
+                Console.WriteLine(normalPropName);
+                Console.WriteLine(deepPropName);
             }
         }
 
