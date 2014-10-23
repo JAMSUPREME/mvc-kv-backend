@@ -94,7 +94,6 @@ namespace mvc_kv_backend.Controllers
             IQueryable results = opts.ApplyTo(db.RootObjects);
 
             var exp = opts.Filter.FilterClause.Expression;
-            exp.
 
             //without customization, above will throw:
             //Additional information: Binding OData QueryNode of kind SingleValueOpenPropertyAccess is not supported by FilterBinder.
